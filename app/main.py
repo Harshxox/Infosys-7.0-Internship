@@ -6,10 +6,11 @@ from app.database.connection import engine, Base
 
 # Import models so SQLAlchemy knows they exist before creating tables
 import app.models.core
-import app.models.billing
+
 
 # Import routers
 from app.routers import auth
+from app.api import plans  # <-- NEW: Imported the plans router
 
 # Create all tables in the database (if they don't exist yet)
 Base.metadata.create_all(bind=engine)
@@ -33,6 +34,7 @@ app.add_middleware(
 
 # Include all route handlers
 app.include_router(auth.router)
+app.include_router(plans.router)  # <-- NEW: Plugged the plans router into the app
 
 # Root endpoint for basic API health check
 @app.get("/")

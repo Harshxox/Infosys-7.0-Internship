@@ -85,11 +85,11 @@ document.getElementById('signin-form').addEventListener('submit', async (e) => {
         const data = await response.json();
 
         if (response.ok) {
-            alert('Successfully signed in!');
+            // Save the token securely in the browser
             localStorage.setItem('access_token', data.access_token);
             
             // Redirect the user to the main dashboard after login
-            // window.location.href = "dashboard.html"; 
+            window.location.href = "dashboard.html"; 
         } else {
             alert('Sign In Failed: ' + data.detail);
         }
@@ -118,13 +118,12 @@ async function handleGoogleLogin(response) {
         const data = await res.json();
 
         if (res.ok) {
-            alert('Successfully signed in with Google!');
             // Save YOUR backend's token to the browser
             localStorage.setItem('access_token', data.access_token);
             console.log("Token saved:", data.access_token);
             
-            // Optional: Redirect to your dashboard page once you build it
-            // window.location.href = "dashboard.html";
+            // Redirect to the dashboard page
+            window.location.href = "dashboard.html";
         } else {
             alert('Google Sign In Failed: ' + data.detail);
         }
