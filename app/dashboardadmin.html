@@ -4,15 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BillWise - Admin Control Center</title>
+    <!-- Premium SaaS Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --bg-glass: rgba(15, 23, 42, 0.65);
-            --bg-glass-card: rgba(30, 41, 59, 0.6);
+            --bg-deep: #0a0e1a;
+            --bg-surface: #111827;
+            --bg-card: rgba(17, 24, 39, 0.75);
+            --bg-glass-card: rgba(30, 41, 59, 0.55);
+            --border-color: rgba(244, 63, 94, 0.18);
+            --border-hover: rgba(244, 63, 94, 0.4);
+            --primary: #f43f5e;
+            --primary-hover: #e11d48;
+            --accent-glow: rgba(244, 63, 94, 0.25);
             --text-main: #f8fafc;
-            --text-muted: #cbd5e1;
-            --border-color: rgba(255, 255, 255, 0.15);
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
@@ -22,78 +29,132 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
         body {
-            background-image: url('https://i.ibb.co/Lh1yTtSM/Professional-subscription-management-themed-background-abstract-representation-of-recurring-billing.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+            background-color: var(--bg-deep);
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
             overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background mesh */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse 70% 50% at 10% 20%, rgba(244, 63, 94, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 90% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 60%);
+            z-index: -1;
+            pointer-events: none;
         }
 
         .overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(11, 15, 25, 0.5);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 14, 26, 0.4); backdrop-filter: blur(8px);
             z-index: -1;
         }
 
         .app-container { display: flex; width: 100%; min-height: 100vh; }
 
         aside {
-            width: 260px;
-            background: var(--bg-glass);
-            backdrop-filter: blur(12px);
-            border-right: 1px solid var(--border-color);
+            width: 270px;
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 2rem 1.5rem;
+            padding: 2rem 1.25rem;
             position: fixed;
             height: 100vh;
             z-index: 100;
+            box-shadow: 5px 0 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo-area {
+            padding: 0.5rem 0.75rem;
+            margin-bottom: 2rem;
+            position: relative;
         }
 
         .logo-area h2 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            background: linear-gradient(to right, #f43f5e, #fb7185);
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #fb7185 0%, #f43f5e 50%, #e11d48 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .nav-links { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; flex-grow: 1; }
+        .logo-area::after {
+            content: 'ADMIN';
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            background: rgba(244, 63, 94, 0.15);
+            color: #fca5a5;
+            padding: 2px 8px;
+            border-radius: 12px;
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        .nav-links { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; flex-grow: 1; }
         .nav-links li a {
-            display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem;
-            color: var(--text-muted); text-decoration: none; border-radius: 8px;
-            transition: all 0.3s ease; font-weight: 500;
+            display: flex; align-items: center; gap: 0.85rem; padding: 0.8rem 1rem;
+            color: var(--text-muted); text-decoration: none; border-radius: 12px;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); font-weight: 600;
+            font-size: 0.9rem; border: 1px solid transparent;
         }
-        .nav-links li.active a, .nav-links li a:hover {
-            background: #e11d48; color: var(--text-main);
-            box-shadow: 0 4px 12px rgba(225, 29, 72, 0.4);
+        .nav-links li a:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.05);
+            transform: translateX(3px);
+        }
+        .nav-links li.active a {
+            background: linear-gradient(135deg, rgba(244, 63, 94, 0.25) 0%, rgba(225, 29, 72, 0.15) 100%);
+            color: #ffffff;
+            border-color: rgba(244, 63, 94, 0.35);
+            box-shadow: 0 4px 15px rgba(244, 63, 94, 0.2);
         }
 
-        main { margin-left: 260px; flex-grow: 1; padding: 2.5rem; overflow-y: auto; }
+        main { 
+            margin-left: 270px; 
+            flex-grow: 1; 
+            padding: 2.5rem 3rem; 
+            overflow-y: auto; 
+            min-height: 100vh;
+        }
 
         .header-bar {
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 2.5rem; background: var(--bg-glass-card);
-            backdrop-filter: blur(10px); padding: 1rem 1.5rem;
-            border-radius: 12px; border: 1px solid var(--border-color);
+            margin-bottom: 2.5rem; background: var(--bg-card);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            padding: 1.25rem 2rem; border-radius: 20px; 
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
         }
 
-        .user-welcome h1 { font-size: 1.5rem; font-weight: 650; }
-        .user-welcome p { color: var(--text-muted); font-size: 0.875rem; }
+        .user-welcome h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
+        .user-welcome p { color: var(--text-muted); font-size: 0.875rem; margin-top: 4px; }
 
         .view-section { display: none; animation: fadeIn 0.4s ease-in-out; }
         .view-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
         .dashboard-grid {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -101,65 +162,104 @@
         }
 
         .card {
-            background: var(--bg-glass-card); backdrop-filter: blur(12px);
-            border: 1px solid var(--border-color); border-radius: 14px;
-            padding: 1.5rem; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+            background: var(--bg-card); backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px;
+            padding: 1.75rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative; overflow: hidden;
         }
-        .card h3 { font-size: 1rem; color: var(--text-muted); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
-        .card .value { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0.5;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-hover);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35), 0 0 30px rgba(244, 63, 94, 0.1);
+        }
+        .card h3 { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+        .card .value { font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -1px; }
 
         .badge {
-            display: inline-block; padding: 0.25rem 0.75rem; border-radius: 50px;
-            font-size: 0.75rem; font-weight: 600;
+            display: inline-flex; align-items: center; gap: 6px; padding: 0.35rem 0.85rem; border-radius: 50px;
+            font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
         }
-        .badge.active { background: rgba(16, 185, 129, 0.25); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
-        .badge.warning { background: rgba(245, 158, 11, 0.25); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+        .badge.active { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge.warning { background: rgba(244, 63, 94, 0.15); color: #fca5a5; border: 1px solid rgba(244, 63, 94, 0.3); }
 
         table {
-            width: 100%; border-collapse: collapse; margin-top: 1rem;
-            background: var(--bg-glass-card); border-radius: 12px; overflow: hidden;
-            border: 1px solid var(--border-color);
+            width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 1.25rem;
+            background: var(--bg-card); border-radius: 16px; overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
-        th, td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid var(--border-color); }
-        th { background: rgba(255, 255, 255, 0.05); font-weight: 600; color: var(--text-muted); font-size: 0.875rem; }
-        td { font-size: 0.9rem; }
+        th, td { padding: 1.1rem 1.5rem; text-align: left; }
+        th { background: rgba(255, 255, 255, 0.03); font-weight: 700; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+        td { font-size: 0.92rem; border-bottom: 1px solid rgba(255, 255, 255, 0.04); color: var(--text-main); font-weight: 500; }
         tr:last-child td { border-bottom: none; }
+        tbody tr { transition: background 0.2s ease; }
+        tbody tr:hover { background: rgba(255, 255, 255, 0.03); }
 
         .btn {
-            background: #e11d48; color: white; border: none; padding: 0.6rem 1.25rem;
-            border-radius: 8px; cursor: pointer; font-weight: 600; transition: background 0.2s;
-            text-decoration: none; display: inline-block; font-size: 0.875rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%); 
+            color: white; border: none; padding: 0.7rem 1.4rem;
+            border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 0.875rem;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3); text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
         }
-        .btn:hover { background: #be123c; }
-        .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
-        .btn-outline:hover { background: rgba(255, 255, 255, 0.1); }
-        .btn-danger { background: var(--danger); }
-        .btn-danger:hover { background: #dc2626; }
+        .btn:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 25px rgba(244, 63, 94, 0.45); 
+        }
+        .btn-outline { 
+            background: rgba(255, 255, 255, 0.05); 
+            border: 1px solid rgba(255, 255, 255, 0.15); 
+            color: var(--text-main); 
+            box-shadow: none;
+        }
+        .btn-outline:hover { 
+            background: rgba(255, 255, 255, 0.1); 
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        .btn-danger { 
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); 
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+        .btn-danger:hover { 
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.45); 
+        }
 
         /* Modal Styles */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(11, 15, 25, 0.8); backdrop-filter: blur(4px);
+            background: rgba(10, 14, 26, 0.85); backdrop-filter: blur(12px);
             display: flex; align-items: center; justify-content: center;
-            z-index: 1000; opacity: 0; visibility: hidden; transition: 0.3s;
+            z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s ease;
         }
         .modal-overlay.active { opacity: 1; visibility: visible; }
         .modal-content {
-            background: var(--bg-glass-card); border: 1px solid var(--border-color);
-            width: 100%; max-width: 450px; padding: 32px; border-radius: 14px; position: relative;
+            background: #111827; border: 1px solid rgba(244, 63, 94, 0.25);
+            width: 100%; max-width: 480px; padding: 36px; border-radius: 24px; position: relative;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 60px rgba(244, 63, 94, 0.15);
+            transform: scale(0.95); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
+        .modal-overlay.active .modal-content { transform: scale(1); }
         .modal-close {
-            position: absolute; top: 16px; right: 20px; background: none; border: none;
-            color: var(--text-muted); font-size: 1.8rem; cursor: pointer;
+            position: absolute; top: 20px; right: 24px; background: rgba(255, 255, 255, 0.05); border: none;
+            color: var(--text-muted); font-size: 1.4rem; width: 36px; height: 36px; border-radius: 50%;
+            cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center;
         }
+        .modal-close:hover { background: rgba(255, 255, 255, 0.1); color: var(--text-main); }
         .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; color: var(--text-main); font-size: 0.9rem; }
+        .form-group label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.825rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; }
         .form-group input {
-            width: 100%; padding: 12px; background: rgba(0,0,0,0.2);
-            border: 1px solid var(--border-color); color: var(--text-main);
-            border-radius: 6px; box-sizing: border-box; font-size: 0.95rem;
+            width: 100%; padding: 13px 16px; background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.12); color: var(--text-main);
+            border-radius: 12px; box-sizing: border-box; font-size: 0.95rem; font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
         }
-        .form-group input:focus { outline: none; border-color: #e11d48; }
+        .form-group input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--accent-glow); }
         .status { margin-top: 15px; font-weight: bold; font-size: 0.9rem; text-align: center;}
     </style>
 </head>
@@ -171,7 +271,7 @@
         <aside>
             <div>
                 <div class="logo-area">
-                    <h2>BillWise Admin</h2>
+                    <h2>BillWise</h2>
                 </div>
                 <ul class="nav-links" id="adminNavList">
                     <li class="active"><a href="#" data-target="admin-overview">📊 <span>Dashboard Overview</span></a></li>
@@ -208,12 +308,12 @@
                     <div class="card">
                         <h3>Total Active Users</h3>
                         <div class="value">1,492</div>
-                        <p style="color: var(--success); font-size: 0.85rem;">+12% from last month</p>
+                        <p style="color: var(--success); font-size: 0.85rem; font-weight: 600;">+12% from last month</p>
                     </div>
                     <div class="card">
                         <h3>Recurring Revenue</h3>
                         <div class="value">$73,108</div>
-                        <p style="color: var(--success); font-size: 0.85rem;">ARR calculated output</p>
+                        <p style="color: var(--success); font-size: 0.85rem; font-weight: 600;">ARR calculated output</p>
                     </div>
                 </div>
             </section>
@@ -222,8 +322,8 @@
             <section id="admin-plans" class="view-section">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                     <div>
-                        <h2>View All Plans</h2>
-                        <p style="color: var(--text-muted);">Create, edit, or delete system pricing configurations.</p>
+                        <h2 style="font-size: 1.5rem; font-weight: 800;">View All Plans</h2>
+                        <p style="color: var(--text-muted); font-size: 0.875rem; margin-top: 4px;">Create, edit, or delete system pricing configurations.</p>
                     </div>
                     <button class="btn" onclick="openModal()">+ Create Plan</button>
                 </div>
@@ -245,8 +345,8 @@
             <!-- Other Admin Sections -->
             <section id="admin-customers" class="view-section">
                 <div style="margin-bottom: 1.5rem;">
-                    <h2>View Customers</h2>
-                    <p style="color: var(--text-muted);">Active platform registered customer records.</p>
+                    <h2 style="font-size: 1.5rem; font-weight: 800;">View Customers</h2>
+                    <p style="color: var(--text-muted); font-size: 0.875rem; margin-top: 4px;">Active platform registered customer records.</p>
                 </div>
                 <table>
                     <thead><tr><th>Customer Name</th><th>Email</th><th>Joined Date</th><th>Status</th></tr></thead>
@@ -258,7 +358,7 @@
             </section>
 
             <section id="admin-subscriptions" class="view-section">
-                <div style="margin-bottom: 1.5rem;"><h2>View Subscriptions</h2></div>
+                <div style="margin-bottom: 1.5rem;"><h2 style="font-size: 1.5rem; font-weight: 800;">View Subscriptions</h2></div>
                 <table>
                     <thead><tr><th>Subscription ID</th><th>Customer</th><th>Plan</th><th>Renewal Date</th></tr></thead>
                     <tbody>
@@ -268,7 +368,7 @@
             </section>
 
             <section id="admin-invoices" class="view-section">
-                <div style="margin-bottom: 1.5rem;"><h2>View Invoices</h2></div>
+                <div style="margin-bottom: 1.5rem;"><h2 style="font-size: 1.5rem; font-weight: 800;">View Invoices</h2></div>
                 <table>
                     <thead><tr><th>Invoice Ref</th><th>Customer</th><th>Amount</th><th>Status</th></tr></thead>
                     <tbody>
@@ -283,7 +383,7 @@
     <div class="modal-overlay" id="createModal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal()">×</button>
-            <h2 style="margin-bottom: 20px;">Create New Plan</h2>
+            <h2 style="margin-bottom: 20px; font-size: 1.4rem; font-weight: 800;">Create New Plan</h2>
             <form id="createPlanForm">
                 <div class="form-group">
                     <label>Plan Name:</label>
@@ -297,13 +397,13 @@
                     <label>Features (comma-separated):</label>
                     <input type="text" id="planFeatures" placeholder="e.g., unlimited_api, 24_7_support" required>
                 </div>
-                <button type="submit" class="btn" style="width: 100%; padding: 12px; margin-top: 10px;">Save Plan</button>
+                <button type="submit" class="btn" style="width: 100%; padding: 14px; margin-top: 10px; justify-content: center;">Save Plan</button>
             </form>
             <div id="createStatus" class="status"></div>
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- JAVASCRIPT LOGIC (Untouched) -->
     <script>
         const API_BASE_URL = "http://127.0.0.1:8000";
 
@@ -365,12 +465,12 @@
                     const features = plan.feature_entitlements ? plan.feature_entitlements.join(", ") : "None";
                     tbody.innerHTML += `
                         <tr>
-                            <td style="font-weight: 600;">${plan.name}</td>
-                            <td>$${plan.price} / mo</td>
-                            <td><small>${features}</small></td>
+                            <td style="font-weight: 700;">${plan.name}</td>
+                            <td><span style="font-weight: 700; color: #38bdf8;">$${plan.price}</span> / mo</td>
+                            <td><small style="color: var(--text-muted);">${features}</small></td>
                             <td>
-                                <button class="btn btn-outline" style="padding: 0.3rem 0.75rem; margin-right: 8px;" onclick="editPlan('${plan.id}', '${plan.name}', ${plan.price})">Edit Price</button>
-                                <button class="btn btn-danger" style="padding: 0.3rem 0.75rem;" onclick="deletePlan('${plan.id}')">Delete</button>
+                                <button class="btn btn-outline" style="padding: 0.4rem 0.85rem; margin-right: 8px; font-size: 0.8rem;" onclick="editPlan('${plan.id}', '${plan.name}', ${plan.price})">Edit Price</button>
+                                <button class="btn btn-danger" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;" onclick="deletePlan('${plan.id}')">Delete</button>
                             </td>
                         </tr>
                     `;

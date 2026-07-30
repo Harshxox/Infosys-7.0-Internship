@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BillWise - Authentication</title>
-    
+
     <!-- Google Identity Services (Untouched logic) -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    
+
     <!-- Link to the external JavaScript file (Untouched logic) -->
     <script src="script.js" defer></script>
 
     <!-- New UI Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
     <!-- New UI Styles -->
     <style>
         :root {
@@ -198,14 +200,20 @@
             letter-spacing: 1px;
         }
 
-        .divider::before, .divider::after {
+        .divider::before,
+        .divider::after {
             content: '';
             flex: 1;
             border-bottom: 1px solid rgba(168, 85, 247, 0.2);
         }
 
-        .divider::before { margin-right: 12px; }
-        .divider::after { margin-left: 12px; }
+        .divider::before {
+            margin-right: 12px;
+        }
+
+        .divider::after {
+            margin-left: 12px;
+        }
 
         .switch-text {
             text-align: center;
@@ -233,11 +241,12 @@
         }
     </style>
 </head>
+
 <body>
 
     <div class="container">
         <div class="card">
-            
+
             <div class="platform-badge">
                 <span>BillWise Platform</span>
             </div>
@@ -250,24 +259,16 @@
 
             <!-- Google Auth Section (Untouched logic) -->
             <div id="g_id_onload"
-                 data-client_id="947976051057-ncvdo5vr5ov3uqm49vvbg3kk9oq16t4v.apps.googleusercontent.com"
-                 data-context="signin"
-                 data-ux_mode="popup"
-                 data-callback="handleGoogleLogin"
-                 data-auto_prompt="false">
+                data-client_id="947976051057-ncvdo5vr5ov3uqm49vvbg3kk9oq16t4v.apps.googleusercontent.com"
+                data-context="signin" data-ux_mode="popup" data-callback="handleGoogleLogin" data-auto_prompt="false">
             </div>
-            
+
             <div class="google-btn-wrapper" style="display: flex; justify-content: center; margin-bottom: 20px;">
-                <div class="g_id_signin" 
-                     data-type="standard" 
-                     data-shape="rectangular" 
-                     data-theme="outline" 
-                     data-text="continue_with" 
-                     data-size="large" 
-                     data-logo_alignment="left">
+                <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline"
+                    data-text="continue_with" data-size="large" data-logo_alignment="left">
                 </div>
             </div>
-            
+
             <div class="divider">OR</div>
 
             <!-- Standard Sign In Form (Untouched IDs) -->
@@ -305,4 +306,5 @@
     </div>
 
 </body>
+
 </html>
