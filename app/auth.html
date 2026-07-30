@@ -3,75 +3,304 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BillFlow - Authentication</title>
+    <title>BillWise - Authentication</title>
     
-    <!-- Link to the external CSS file -->
-    <link rel="stylesheet" href="styles.css">
-    
-    <!-- Google Identity Services -->
+    <!-- Google Identity Services (Untouched logic) -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     
-    <!-- Link to the external JavaScript file -->
+    <!-- Link to the external JavaScript file (Untouched logic) -->
     <script src="script.js" defer></script>
+
+    <!-- New UI Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- New UI Styles -->
+    <style>
+        :root {
+            --bg-deep: #0f0c1b;
+            --card-bg: rgba(22, 18, 38, 0.88);
+            --border-color: rgba(168, 85, 247, 0.25);
+            --accent-purple: #a855f7;
+            --accent-pink: #ec4899;
+            --accent-glow: rgba(168, 85, 247, 0.35);
+            --text-main: #f8fafc;
+            --text-muted: #cbd5e1;
+            --input-bg: rgba(30, 24, 51, 0.7);
+            --success: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            background-image: linear-gradient(rgba(15, 12, 27, 0.75), rgba(15, 12, 27, 0.75)), url('https://i.ibb.co/gZ2hKHkX/Professional-subscription-management-themed-background-abstract-representation-of-recurring-billing.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            overflow-y: auto;
+            position: relative;
+            padding: 40px 0;
+        }
+
+        /* Container & Glassmorphism Card Style */
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
+            z-index: 10;
+            margin: auto;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--border-color);
+            border-radius: 28px;
+            padding: 38px;
+            box-shadow: 0 35px 60px rgba(15, 12, 27, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-purple), var(--accent-pink));
+        }
+
+        .platform-badge {
+            text-align: center;
+            margin-bottom: 18px;
+        }
+
+        .platform-badge span {
+            background: rgba(168, 85, 247, 0.12);
+            color: #d8b4fe;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            text-transform: uppercase;
+        }
+
+        .brand-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .brand-header h2 {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+            /* Gradient applied to the H2 so JS doesn't wipe it out */
+            background: linear-gradient(135deg, #c084fc, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-header p {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--input-bg);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input::placeholder {
+            color: #64748b;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+            background: rgba(30, 24, 51, 0.9);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 13px;
+            border-radius: 12px;
+            border: none;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 6px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-purple) 0%, var(--accent-pink) 100%);
+            color: #ffffff;
+            box-shadow: 0 8px 20px rgba(168, 85, 247, 0.35);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(168, 85, 247, 0.5);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 22px 0;
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid rgba(168, 85, 247, 0.2);
+        }
+
+        .divider::before { margin-right: 12px; }
+        .divider::after { margin-left: 12px; }
+
+        .switch-text {
+            text-align: center;
+            margin-top: 22px;
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .switch-text a {
+            color: #e879f9;
+            text-decoration: none;
+            font-weight: 700;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .switch-text a:hover {
+            text-decoration: underline;
+        }
+
+        /* Class required by script.js to toggle forms */
+        .hidden {
+            display: none !important;
+        }
+    </style>
 </head>
 <body>
 
-    <div class="auth-container">
-        <h2 id="form-title">Sign In</h2>
-        <p class="auth-subtitle" id="form-subtitle">Welcome back to the Billing Platform</p>
+    <div class="container">
+        <div class="card">
+            
+            <div class="platform-badge">
+                <span>BillWise Platform</span>
+            </div>
 
-        <!-- Google Auth Section -->
-        <div id="g_id_onload"
-             data-client_id="947976051057-ncvdo5vr5ov3uqm49vvbg3kk9oq16t4v.apps.googleusercontent.com"
-             data-context="signin"
-             data-ux_mode="popup"
-             data-callback="handleGoogleLogin"
-             data-auto_prompt="false">
-        </div>
-        
-        <div class="google-btn-wrapper" style="display: flex; justify-content: center; margin-bottom: 20px;">
-            <div class="g_id_signin" 
-                 data-type="standard" 
-                 data-shape="rectangular" 
-                 data-theme="outline" 
-                 data-text="continue_with" 
-                 data-size="large" 
-                 data-logo_alignment="left">
+            <!-- Dynamic Header controlled by script.js -->
+            <div class="brand-header">
+                <h2 id="form-title">Sign In</h2>
+                <p id="form-subtitle">Welcome back to the Billing Platform</p>
             </div>
-        </div>
-        
-        <div class="divider" style="text-align: center; margin-bottom: 20px; font-size: 14px; color: #888;">OR</div>
 
-        <!-- Standard Sign In Form -->
-        <form id="signin-form">
-            <div class="form-group">
-                <label for="signin-email">Email Address</label>
-                <input type="email" id="signin-email" required placeholder="you@company.com">
+            <!-- Google Auth Section (Untouched logic) -->
+            <div id="g_id_onload"
+                 data-client_id="947976051057-ncvdo5vr5ov3uqm49vvbg3kk9oq16t4v.apps.googleusercontent.com"
+                 data-context="signin"
+                 data-ux_mode="popup"
+                 data-callback="handleGoogleLogin"
+                 data-auto_prompt="false">
             </div>
-            <div class="form-group">
-                <label for="signin-password">Password</label>
-                <input type="password" id="signin-password" required placeholder="••••••••">
+            
+            <div class="google-btn-wrapper" style="display: flex; justify-content: center; margin-bottom: 20px;">
+                <div class="g_id_signin" 
+                     data-type="standard" 
+                     data-shape="rectangular" 
+                     data-theme="outline" 
+                     data-text="continue_with" 
+                     data-size="large" 
+                     data-logo_alignment="left">
+                </div>
             </div>
-            <button type="submit" class="btn-primary">Sign In</button>
-        </form>
+            
+            <div class="divider">OR</div>
 
-        <!-- Standard Sign Up Form (Hidden by default) -->
-        <form id="signup-form" class="hidden">
-            <!-- Note: Full Name removed to match backend Pydantic schema -->
-            <div class="form-group">
-                <label for="signup-email">Email Address</label>
-                <input type="email" id="signup-email" required placeholder="you@company.com">
-            </div>
-            <div class="form-group">
-                <label for="signup-password">Password</label>
-                <input type="password" id="signup-password" required placeholder="Create a password">
-            </div>
-            <button type="submit" class="btn-primary">Create Account</button>
-        </form>
+            <!-- Standard Sign In Form (Untouched IDs) -->
+            <form id="signin-form">
+                <div class="input-group">
+                    <label for="signin-email">Email Address</label>
+                    <input type="email" id="signin-email" required placeholder="you@company.com">
+                </div>
+                <div class="input-group">
+                    <label for="signin-password">Password</label>
+                    <input type="password" id="signin-password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary">Sign In</button>
+            </form>
 
-        <!-- Toggle between Sign In and Sign Up -->
-        <div class="toggle-text" id="toggle-container">
-            Don't have an account? <a href="#" onclick="toggleForms(); return false;">Sign up</a>
+            <!-- Standard Sign Up Form (Untouched IDs) -->
+            <form id="signup-form" class="hidden">
+                <div class="input-group">
+                    <label for="signup-email">Email Address</label>
+                    <input type="email" id="signup-email" required placeholder="you@company.com">
+                </div>
+                <div class="input-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" required placeholder="Create a password">
+                </div>
+                <button type="submit" class="btn btn-primary">Create Account</button>
+            </form>
+
+            <!-- Toggle between Sign In and Sign Up (Untouched logic) -->
+            <div class="switch-text" id="toggle-container">
+                Don't have an account? <a href="#" onclick="toggleForms(); return false;">Sign up</a>
+            </div>
+
         </div>
     </div>
 

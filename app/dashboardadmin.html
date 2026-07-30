@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BillWise - Admin Control Center</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-glass: rgba(15, 23, 42, 0.65);
+            --bg-glass-card: rgba(30, 41, 59, 0.6);
+            --text-main: #f8fafc;
+            --text-muted: #cbd5e1;
+            --border-color: rgba(255, 255, 255, 0.15);
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-image: url('https://i.ibb.co/Lh1yTtSM/Professional-subscription-management-themed-background-abstract-representation-of-recurring-billing.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(11, 15, 25, 0.5);
+            z-index: -1;
+        }
+
+        .app-container { display: flex; width: 100%; min-height: 100vh; }
+
+        aside {
+            width: 260px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(12px);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 2rem 1.5rem;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+        }
+
+        .logo-area h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #f43f5e, #fb7185);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 2rem;
+        }
+
+        .nav-links { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; flex-grow: 1; }
+        .nav-links li a {
+            display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem;
+            color: var(--text-muted); text-decoration: none; border-radius: 8px;
+            transition: all 0.3s ease; font-weight: 500;
+        }
+        .nav-links li.active a, .nav-links li a:hover {
+            background: #e11d48; color: var(--text-main);
+            box-shadow: 0 4px 12px rgba(225, 29, 72, 0.4);
+        }
+
+        main { margin-left: 260px; flex-grow: 1; padding: 2.5rem; overflow-y: auto; }
+
+        .header-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 2.5rem; background: var(--bg-glass-card);
+            backdrop-filter: blur(10px); padding: 1rem 1.5rem;
+            border-radius: 12px; border: 1px solid var(--border-color);
+        }
+
+        .user-welcome h1 { font-size: 1.5rem; font-weight: 650; }
+        .user-welcome p { color: var(--text-muted); font-size: 0.875rem; }
+
+        .view-section { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .dashboard-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem; margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--bg-glass-card); backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color); border-radius: 14px;
+            padding: 1.5rem; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+        }
+        .card h3 { font-size: 1rem; color: var(--text-muted); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .card .value { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; }
+
+        .badge {
+            display: inline-block; padding: 0.25rem 0.75rem; border-radius: 50px;
+            font-size: 0.75rem; font-weight: 600;
+        }
+        .badge.active { background: rgba(16, 185, 129, 0.25); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+        .badge.warning { background: rgba(245, 158, 11, 0.25); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+
+        table {
+            width: 100%; border-collapse: collapse; margin-top: 1rem;
+            background: var(--bg-glass-card); border-radius: 12px; overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        th, td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background: rgba(255, 255, 255, 0.05); font-weight: 600; color: var(--text-muted); font-size: 0.875rem; }
+        td { font-size: 0.9rem; }
+        tr:last-child td { border-bottom: none; }
+
+        .btn {
+            background: #e11d48; color: white; border: none; padding: 0.6rem 1.25rem;
+            border-radius: 8px; cursor: pointer; font-weight: 600; transition: background 0.2s;
+            text-decoration: none; display: inline-block; font-size: 0.875rem;
+        }
+        .btn:hover { background: #be123c; }
+        .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
+        .btn-outline:hover { background: rgba(255, 255, 255, 0.1); }
+        .btn-danger { background: var(--danger); }
+        .btn-danger:hover { background: #dc2626; }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(11, 15, 25, 0.8); backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000; opacity: 0; visibility: hidden; transition: 0.3s;
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal-content {
+            background: var(--bg-glass-card); border: 1px solid var(--border-color);
+            width: 100%; max-width: 450px; padding: 32px; border-radius: 14px; position: relative;
+        }
+        .modal-close {
+            position: absolute; top: 16px; right: 20px; background: none; border: none;
+            color: var(--text-muted); font-size: 1.8rem; cursor: pointer;
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: var(--text-main); font-size: 0.9rem; }
+        .form-group input {
+            width: 100%; padding: 12px; background: rgba(0,0,0,0.2);
+            border: 1px solid var(--border-color); color: var(--text-main);
+            border-radius: 6px; box-sizing: border-box; font-size: 0.95rem;
+        }
+        .form-group input:focus { outline: none; border-color: #e11d48; }
+        .status { margin-top: 15px; font-weight: bold; font-size: 0.9rem; text-align: center;}
+    </style>
+</head>
+<body>
+    <div class="overlay"></div>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside>
+            <div>
+                <div class="logo-area">
+                    <h2>BillWise Admin</h2>
+                </div>
+                <ul class="nav-links" id="adminNavList">
+                    <li class="active"><a href="#" data-target="admin-overview">📊 <span>Dashboard Overview</span></a></li>
+                    <li><a href="#" data-target="admin-plans">💳 <span>Plans Management</span></a></li>
+                    <li><a href="#" data-target="admin-customers">👥 <span>View Customers</span></a></li>
+                    <li><a href="#" data-target="admin-subscriptions">📦 <span>View Subscriptions</span></a></li>
+                    <li><a href="#" data-target="admin-invoices">📄 <span>View Invoices</span></a></li>
+                </ul>
+            </div>
+            
+            <div>
+                <!-- Removed Role Switcher, only Logout remains -->
+                <ul class="nav-links" style="margin-top: 1rem;">
+                    <li><a href="#" onclick="logout()">🚪 <span>Logout</span></a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main>
+            <header class="header-bar">
+                <div class="user-welcome">
+                    <h1>Welcome, Administrator</h1>
+                    <p>Global financial controls, plan creation, and audit metrics.</p>
+                </div>
+                <div>
+                    <span class="badge warning">Superuser Auth</span>
+                </div>
+            </header>
+
+            <!-- 1. Dashboard Overview -->
+            <section id="admin-overview" class="view-section active">
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3>Total Active Users</h3>
+                        <div class="value">1,492</div>
+                        <p style="color: var(--success); font-size: 0.85rem;">+12% from last month</p>
+                    </div>
+                    <div class="card">
+                        <h3>Recurring Revenue</h3>
+                        <div class="value">$73,108</div>
+                        <p style="color: var(--success); font-size: 0.85rem;">ARR calculated output</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. Plans Management -->
+            <section id="admin-plans" class="view-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <div>
+                        <h2>View All Plans</h2>
+                        <p style="color: var(--text-muted);">Create, edit, or delete system pricing configurations.</p>
+                    </div>
+                    <button class="btn" onclick="openModal()">+ Create Plan</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Plan Name</th>
+                            <th>Pricing Tier</th>
+                            <th>Features</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="plansTableBody">
+                        <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Loading plans...</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Other Admin Sections -->
+            <section id="admin-customers" class="view-section">
+                <div style="margin-bottom: 1.5rem;">
+                    <h2>View Customers</h2>
+                    <p style="color: var(--text-muted);">Active platform registered customer records.</p>
+                </div>
+                <table>
+                    <thead><tr><th>Customer Name</th><th>Email</th><th>Joined Date</th><th>Status</th></tr></thead>
+                    <tbody>
+                        <tr><td>Sree</td><td>sree@example.com</td><td>Jan 12, 2026</td><td><span class="badge active">Active</span></td></tr>
+                        <tr><td>Sriya</td><td>Sriya.m@example.com</td><td>Feb 04, 2026</td><td><span class="badge active">Active</span></td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="admin-subscriptions" class="view-section">
+                <div style="margin-bottom: 1.5rem;"><h2>View Subscriptions</h2></div>
+                <table>
+                    <thead><tr><th>Subscription ID</th><th>Customer</th><th>Plan</th><th>Renewal Date</th></tr></thead>
+                    <tbody>
+                        <tr><td>#SUB-9941</td><td>Sree</td><td>Pro Enterprise</td><td>Aug 28, 2026</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="admin-invoices" class="view-section">
+                <div style="margin-bottom: 1.5rem;"><h2>View Invoices</h2></div>
+                <table>
+                    <thead><tr><th>Invoice Ref</th><th>Customer</th><th>Amount</th><th>Status</th></tr></thead>
+                    <tbody>
+                        <tr><td>#INV-2026-07</td><td>Sree</td><td>$49.00</td><td><span class="badge active">Paid</span></td></tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <!-- CREATE PLAN MODAL -->
+    <div class="modal-overlay" id="createModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <h2 style="margin-bottom: 20px;">Create New Plan</h2>
+            <form id="createPlanForm">
+                <div class="form-group">
+                    <label>Plan Name:</label>
+                    <input type="text" id="planName" placeholder="e.g., Enterprise Tier" required>
+                </div>
+                <div class="form-group">
+                    <label>Monthly Price ($):</label>
+                    <input type="number" id="planPrice" placeholder="e.g., 99.99" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>Features (comma-separated):</label>
+                    <input type="text" id="planFeatures" placeholder="e.g., unlimited_api, 24_7_support" required>
+                </div>
+                <button type="submit" class="btn" style="width: 100%; padding: 12px; margin-top: 10px;">Save Plan</button>
+            </form>
+            <div id="createStatus" class="status"></div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        const API_BASE_URL = "http://127.0.0.1:8000";
+
+        // Navigation UI Logic
+        const adminLinks = document.querySelectorAll('#adminNavList li a');
+        adminLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('data-target');
+                adminLinks.forEach(l => l.parentElement.classList.remove('active'));
+                link.parentElement.classList.add('active');
+                document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+                document.getElementById(targetId).classList.add('active');
+            });
+        });
+
+        // Authentication & Backend Logic
+        window.onload = () => {
+            const token = localStorage.getItem("access_token");
+            if (!token) {
+                alert("You must be logged in to view this page.");
+                window.location.href = "auth.html";
+                return;
+            }
+            fetchPlans();
+        };
+
+        function logout() {
+            localStorage.removeItem("access_token");
+            window.location.href = "auth.html";
+        }
+
+        function openModal() {
+            document.getElementById('createModal').classList.add('active');
+            document.getElementById('createStatus').textContent = "";
+        }
+
+        function closeModal() {
+            document.getElementById('createModal').classList.remove('active');
+            document.getElementById("createPlanForm").reset();
+        }
+
+        // 1. READ PLANS (GET)
+        async function fetchPlans() {
+            const tbody = document.getElementById("plansTableBody");
+            tbody.innerHTML = "<tr><td colspan='4' style='text-align: center; color: var(--text-muted);'>Fetching plans...</td></tr>";
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/plans/`);
+                const plans = await response.json();
+                
+                tbody.innerHTML = "";
+                if (plans.length === 0) {
+                    tbody.innerHTML = "<tr><td colspan='4' style='text-align: center; color: var(--text-muted);'>No plans found in database.</td></tr>";
+                    return;
+                }
+                
+                plans.forEach(plan => {
+                    const features = plan.feature_entitlements ? plan.feature_entitlements.join(", ") : "None";
+                    tbody.innerHTML += `
+                        <tr>
+                            <td style="font-weight: 600;">${plan.name}</td>
+                            <td>$${plan.price} / mo</td>
+                            <td><small>${features}</small></td>
+                            <td>
+                                <button class="btn btn-outline" style="padding: 0.3rem 0.75rem; margin-right: 8px;" onclick="editPlan('${plan.id}', '${plan.name}', ${plan.price})">Edit Price</button>
+                                <button class="btn btn-danger" style="padding: 0.3rem 0.75rem;" onclick="deletePlan('${plan.id}')">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan='4' style="color: var(--danger); text-align: center;">Error fetching plans. Is FastAPI running?</td></tr>`;
+            }
+        }
+
+        // 2. CREATE PLAN (POST)
+        document.getElementById("createPlanForm").addEventListener("submit", async (e) => {
+            e.preventDefault(); 
+            const statusText = document.getElementById("createStatus");
+            statusText.textContent = "Sending request to backend...";
+            statusText.style.color = "var(--text-muted)";
+
+            const token = localStorage.getItem("access_token");
+            const name = document.getElementById("planName").value;
+            const price = parseFloat(document.getElementById("planPrice").value);
+            const features = document.getElementById("planFeatures").value.split(",").map(f => f.trim());
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/plans/`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}` 
+                    },
+                    body: JSON.stringify({ name: name, price: price, feature_entitlements: features })
+                });
+
+                if (response.ok) {
+                    statusText.textContent = `✅ Success! Plan saved.`;
+                    statusText.style.color = "var(--success)";
+                    fetchPlans(); 
+                    setTimeout(closeModal, 1000); 
+                } else {
+                    const errorData = await response.json();
+                    statusText.textContent = `❌ Blocked! ${JSON.stringify(errorData)}`;
+                    statusText.style.color = "var(--danger)";
+                }
+            } catch (error) {
+                statusText.textContent = `❌ Network Error: ${error.message}`;
+                statusText.style.color = "var(--danger)";
+            }
+        });
+
+        // 3. DELETE PLAN (DELETE)
+        async function deletePlan(planId) {
+            if (!confirm("Are you sure you want to delete this plan? This action cannot be undone.")) return;
+            const token = localStorage.getItem("access_token");
+            try {
+                const response = await fetch(`${API_BASE_URL}/plans/${planId}`, {
+                    method: "DELETE",
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    fetchPlans(); 
+                } else {
+                    const errorData = await response.json();
+                    alert(`Failed to delete plan: ${JSON.stringify(errorData)}`);
+                }
+            } catch (error) {
+                alert("A network error occurred while trying to delete the plan.");
+            }
+        }
+
+        // 4. EDIT PLAN (PUT) 
+        async function editPlan(planId, currentName, currentPrice) {
+            const newPrice = prompt(`Enter new monthly price for ${currentName}:`, currentPrice);
+            if (newPrice === null || newPrice.trim() === "") return; 
+            const parsedPrice = parseFloat(newPrice);
+            if (isNaN(parsedPrice)) {
+                alert("Please enter a valid number for the price.");
+                return;
+            }
+
+            const token = localStorage.getItem("access_token");
+            try {
+                const response = await fetch(`${API_BASE_URL}/plans/${planId}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ price: parsedPrice })
+                });
+                if (response.ok) {
+                    fetchPlans(); 
+                } else {
+                    const errorData = await response.json();
+                    alert(`Failed to update plan: ${JSON.stringify(errorData)}`);
+                }
+            } catch (error) {
+                alert("A network error occurred while trying to update the plan.");
+            }
+        }
+    </script>
+</body>
+</html>

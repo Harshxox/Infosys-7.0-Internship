@@ -1,4 +1,32 @@
 // ==========================================
+// HELPER: DECODE JWT TOKEN & ROUTE USER
+// ==========================================
+function parseJwt(token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    } catch(e) {
+        return null;
+    }
+}
+
+// 🚨 IMPORTANT: Change this to YOUR exact admin email address!
+const ADMIN_EMAIL = "harshdeep@admin.com"; 
+
+function routeUser(token) {
+    const payload = parseJwt(token);
+    if (payload && payload.sub === ADMIN_EMAIL) {
+        window.location.href = "dashboardadmin.html"; // Route to Admin
+    } else {
+        window.location.href = "dashboardcustomer.html"; // Route to Customer
+    }
+}
+
+// ==========================================
 // UI TOGGLE LOGIC
 // ==========================================
 function toggleForms() {
@@ -20,7 +48,7 @@ function toggleForms() {
         signinForm.classList.add('hidden');
         signupForm.classList.remove('hidden');
         formTitle.innerText = 'Create Account';
-        formSubtitle.innerText = 'Get started with BillFlow';
+        formSubtitle.innerText = 'Get started with BillWise'; 
         toggleContainer.innerHTML = 'Already have an account? <a href="#" onclick="toggleForms(); return false;">Sign in</a>';
     }
 }
@@ -88,8 +116,8 @@ document.getElementById('signin-form').addEventListener('submit', async (e) => {
             // Save the token securely in the browser
             localStorage.setItem('access_token', data.access_token);
             
-            // Redirect the user to the main dashboard after login
-            window.location.href = "dashboard.html"; 
+            // 🚀 SMART REDIRECT
+            routeUser(data.access_token);
         } else {
             alert('Sign In Failed: ' + data.detail);
         }
@@ -122,8 +150,8 @@ async function handleGoogleLogin(response) {
             localStorage.setItem('access_token', data.access_token);
             console.log("Token saved:", data.access_token);
             
-            // Redirect to the dashboard page
-            window.location.href = "dashboard.html";
+            // 🚀 SMART REDIRECT
+            routeUser(data.access_token);
         } else {
             alert('Google Sign In Failed: ' + data.detail);
         }
