@@ -177,6 +177,7 @@
         }
         .badge.active { background: var(--mint-light); color: var(--text-dark-mint); }
         .badge.warning { background: #fef3c7; color: #b45309; }
+        .badge.danger { background: rgba(239, 68, 68, 0.15); color: #dc2626; } /* Added danger badge for inactive users */
 
         table {
             width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 1.25rem;
@@ -278,7 +279,6 @@
             </div>
             
             <div>
-                <!-- Removed Role Switcher, only Logout remains -->
                 <ul class="nav-links" style="margin-top: 1rem;">
                     <li><a href="#" onclick="logout()">🚪 <span>Logout</span></a></li>
                 </ul>
@@ -337,7 +337,7 @@
                 </table>
             </section>
 
-            <!-- Other Admin Sections -->
+            <!-- 3. View Customers (Now Dynamic) -->
             <section id="admin-customers" class="view-section">
                 <div style="margin-bottom: 1.5rem;">
                     <h2 style="font-size: 1.5rem; font-weight: 800;">View Customers</h2>
@@ -345,13 +345,13 @@
                 </div>
                 <table>
                     <thead><tr><th>Customer Name</th><th>Email</th><th>Joined Date</th><th>Status</th></tr></thead>
-                    <tbody>
-                        <tr><td>Sree</td><td>sree@example.com</td><td>Jan 12, 2026</td><td><span class="badge active">Active</span></td></tr>
-                        <tr><td>Sriya</td><td>Sriya.m@example.com</td><td>Feb 04, 2026</td><td><span class="badge active">Active</span></td></tr>
+                    <tbody id="customersTableBody">
+                        <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Loading customers from database...</td></tr>
                     </tbody>
                 </table>
             </section>
 
+            <!-- Other Admin Sections -->
             <section id="admin-subscriptions" class="view-section">
                 <div style="margin-bottom: 1.5rem;"><h2 style="font-size: 1.5rem; font-weight: 800;">View Subscriptions</h2></div>
                 <table>
@@ -398,7 +398,7 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC (Untouched) -->
+    <!-- JAVASCRIPT LOGIC -->
     <script>
         const API_BASE_URL = "http://127.0.0.1:8000";
 
@@ -423,7 +423,10 @@
                 window.location.href = "auth.html";
                 return;
             }
+            
+            // Load Dynamic Data
             fetchPlans();
+            fetchCustomers();
         };
 
         function logout() {
@@ -561,6 +564,59 @@
                 }
             } catch (error) {
                 alert("A network error occurred while trying to update the plan.");
+            }
+        }
+
+        // 5. READ CUSTOMERS (GET)
+        async function fetchCustomers() {
+            const tbody = document.getElementById("customersTableBody");
+            const token = localStorage.getItem("access_token");
+            if (!token) return;
+
+            try {
+                // Change '/users/' if your FastAPI endpoint for getting users has a different route name
+                const response = await fetch(`${API_BASE_URL}/users/`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error("Failed to authenticate or fetch data");
+                }
+
+                const customers = await response.json();
+                tbody.innerHTML = ""; 
+                
+                if (customers.length === 0) {
+                    tbody.innerHTML = "<tr><td colspan='4' style='text-align: center; color: var(--text-muted);'>No registered customers found in database.</td></tr>";
+                    return;
+                }
+                
+                // Populate the table dynamically from DB
+                customers.forEach(customer => {
+                    const name = customer.name || customer.username || "N/A";
+                    const email = customer.email || "N/A";
+                    const joinedDate = customer.created_at ? new Date(customer.created_at).toLocaleDateString() : "Unknown";
+                    
+                    const isActive = customer.is_active !== false; 
+                    const statusText = isActive ? "ACTIVE" : "INACTIVE";
+                    const badgeClass = isActive ? "badge active" : "badge danger"; 
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td style="font-weight: 600;">${name}</td>
+                            <td>${email}</td>
+                            <td>${joinedDate}</td>
+                            <td><span class="${badgeClass}">${statusText}</span></td>
+                        </tr>
+                    `;
+                });
+            } catch (error) {
+                console.error("Fetch Customers Error:", error);
+                tbody.innerHTML = `<tr><td colspan='4' style="color: var(--danger); text-align: center;">Error fetching customer records from database. Check backend connection.</td></tr>`;
             }
         }
     </script>
